@@ -1,3 +1,4 @@
+-- Для Employees (Hibernate створив 'employees')
 INSERT INTO EMPLOYEES (BIRTH_DATE, EMAIL, NAME, PASSWORD, PHONE)
 VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', 'pass123', '555-123-4567'),
        ('1985-09-20', 'jane.smith@email.com', 'Jane Smith', 'abc456', '555-987-6543'),
@@ -10,6 +11,7 @@ VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', 'pass123', '555-123-4567
        ('1992-08-22', 'david.wright@email.com', 'David Wright', 'access123', '555-456-7890'),
        ('1980-04-10', 'emily.harris@email.com', 'Emily Harris', '1234abcd', '555-098-7654');
 
+-- Для Clients (Hibernate створив 'clients')
 INSERT INTO CLIENTS (BALANCE, EMAIL, NAME, PASSWORD)
 VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', 'password123'),
        (1500.50, 'client2@example.com', 'Landon Phillips', 'securepass'),
@@ -22,7 +24,8 @@ VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', 'password123'),
        (1050.90, 'client9@example.com', 'Amina Clarke', 'qwerty123'),
        (880.20, 'client10@example.com', 'Bryson Chavez', 'pass789');
 
-INSERT INTO BOOKS (name, genre, age_group, price, publication_year, author, number_of_pages, characteristics,description, language)
+-- Для Books (Hibernate створив 'books')
+INSERT INTO BOOKS (name, genre, age_group, price, publication_date, author, pages, characteristics, description, language)
 VALUES ('The Hidden Treasure', 'Adventure', 'ADULT', 24.99, '2018-05-15', 'Emily White', 400, 'Mysterious journey','An enthralling adventure of discovery', 'ENGLISH'),
        ('Echoes of Eternity', 'Fantasy', 'TEEN', 16.50, '2011-01-15', 'Daniel Black', 350, 'Magical realms', 'A spellbinding tale of magic and destiny', 'ENGLISH'),
        ('Whispers in the Shadows', 'Mystery', 'ADULT', 29.95, '2018-08-11', 'Sophia Green', 450, 'Intriguing suspense','A gripping mystery that keeps you guessing', 'ENGLISH'),

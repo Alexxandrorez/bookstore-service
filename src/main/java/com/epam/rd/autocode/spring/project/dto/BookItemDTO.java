@@ -1,5 +1,15 @@
 package com.epam.rd.autocode.spring.project.dto;
 
+import jakarta.validation.constraints.Min;
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookItemDTO {
-    // TODO Place your code here
+
+    private String bookName;
+
+    @Min(1)
+    private Integer quantity;
 }

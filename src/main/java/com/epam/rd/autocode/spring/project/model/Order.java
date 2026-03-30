@@ -1,5 +1,38 @@
 package com.epam.rd.autocode.spring.project.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+@Table(name = "orders")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Order {
-    // TODO Place your code here
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
+    private LocalDateTime orderDate;
+
+    @DecimalMin("0.0")
+    private BigDecimal price;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookItem> bookItems;
 }
