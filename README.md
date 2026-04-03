@@ -55,19 +55,3 @@ This project demonstrates practical experience with Java 21 , secure architectur
 
 </details>
 
-
-## Getting Started
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/Alexxandrorez/bookstore-service.git
-
-2. Navigate to the project folder:
-Bash
-cd bookstore-service
-
-3. Run the application using Maven:
-Bash
-mvn spring-boot:run
-The application will be available at: http://localhost:8084
