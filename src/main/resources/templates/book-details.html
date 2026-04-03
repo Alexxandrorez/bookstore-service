@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${book.name} + ' — ' + #{nav.brand}">Деталі книги</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="flex-center"> <div class="lang-switcher-fixed">
+    <a th:href="@{''(lang='uk')}" th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+    <span class="divider-small">|</span>
+    <a th:href="@{''(lang='en')}" th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+</div>
+
+<div class="card details-container"> <div th:if="${error}" class="alert alert-danger">
+    <span th:text="${error}">Помилка</span>
+</div>
+
+    <p class="meta" th:text="#{book.details}">Деталі книги</p>
+    <h1 class="page-title" style="text-align: left;" th:text="${book.name}">Назва книги</h1>
+    <p class="author" th:text="${book.author}">Автор</p>
+
+    <hr class="divider">
+
+    <p class="price">
+        <span th:text="#{book.price.label}">Вартість:</span>
+        <strong th:text="${book.price} + ' ' + #{book.price.currency}">0 грн</strong>
+    </p>
+
+    <div class="description">
+        <p th:text="${book.description}">Опис книги</p>
+    </div>
+
+    <div class="actions">
+        <form sec:authorize="hasRole('CUSTOMER')" th:action="@{/orders/add}" method="post" class="inline-form">
+            <input type="hidden" name="bookName" th:value="${book.name}">
+            <button type="submit" class="btn-primary" th:text="#{book.buy}">Купити</button>
+        </form>
+
+        <span sec:authorize="isAnonymous()" class="login-tip">
+            <a th:href="@{/login}" th:text="#{book.login.to.buy}">Увійдіть, щоб купити</a>
+        </span>
+
+        <a th:href="@{/books/all}" class="btn-secondary" th:text="#{paging.back}">← Назад до каталогу</a>
+    </div>
+</div>
+
+</body>
+</html>

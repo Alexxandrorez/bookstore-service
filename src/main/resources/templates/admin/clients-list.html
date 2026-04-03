@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{clients.list.title} + ' — ' + #{nav.brand}">База клієнтів — BookStore Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a class="brand" href="/">
+        <span th:text="#{nav.brand}">BOOKSTORE</span>
+        <small th:text="#{nav.admin}">ADMIN</small>
+    </a>
+
+    <div class="nav-right">
+        <div class="lang-switcher">
+            <a th:href="@{''(lang='uk', page=${currentPage})}"
+               th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+            <span class="divider-small">|</span>
+            <a th:href="@{''(lang='en', page=${currentPage})}"
+               th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+        </div>
+        <a th:href="@{/admin/dashboard}" class="btn-nav" th:text="#{nav.back.dashboard}">Назад до панелі</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header-flex">
+        <div>
+            <h1 class="page-title" style="text-align: left;" th:text="#{clients.list.title}">База клієнтів</h1>
+            <p class="meta" th:text="#{clients.list.lead}">Повний перегляд зареєстрованих користувачів</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th th:text="#{clients.table.name}">Ім'я клієнта</th>
+            <th th:text="#{clients.table.email}">Email</th>
+            <th th:text="#{clients.table.balance}">Баланс</th>
+            <th class="col-actions-narrow" style="text-align: right;" th:text="#{clients.table.actions}">Дії</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="client : ${clients}">
+            <td th:text="${client.name}">Ім'я</td>
+            <td th:text="${client.email}" class="meta" style="text-transform: none;">email@example.com</td>
+            <td>
+                <strong th:text="${#numbers.formatDecimal(client.balance, 1, 2)} + ' ' + #{book.price.currency}">0.00 грн</strong>
+            </td>
+            <td style="text-align: right;">
+                <div class="table-actions" style="justify-content: flex-end;">
+                    <a th:href="@{'/admin/clients/' + ${client.email}}" class="btn-outline btn-tiny" th:text="#{clients.action.profile}">Профіль</a>
+
+                    <form th:action="@{/admin/clients/delete}" method="post" class="inline-form"
+                          th:onsubmit="|return confirm('#{clients.confirm.delete}');|">
+                        <input type="hidden" name="email" th:value="${client.email}">
+                        <button type="submit" class="btn-outline btn-danger btn-tiny" th:text="#{clients.action.delete}">Видалити</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${totalPages > 1}" class="pagination-row">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/admin/clients/all(page=${currentPage - 1})}"
+           class="btn-outline btn-tiny" th:text="#{paging.back}">← Назад</a>
+
+        <div class="self-note">
+            <span th:text="#{paging.page}">Сторінка</span>
+            <strong th:text="${currentPage + 1}">1</strong>
+            <span th:text="#{paging.of}">з</span>
+            <strong th:text="${totalPages}">1</strong>
+        </div>
+
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/admin/clients/all(page=${currentPage + 1})}"
+           class="btn-outline btn-tiny" th:text="#{paging.forward}">Вперед →</a>
+    </div>
+
+    <div th:if="${clients.empty}" class="empty-orders">
+        <p th:text="#{clients.empty}">Клієнтів поки що немає.</p>
+    </div>
+</div>
+
+<script th:src="@{/js/scroll-restoration.js}"></script>
+
+</body>
+</html>

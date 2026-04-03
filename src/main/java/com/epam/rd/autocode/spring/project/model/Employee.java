@@ -1,9 +1,7 @@
 package com.epam.rd.autocode.spring.project.model;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.epam.rd.autocode.spring.project.model.enums.Role;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -15,18 +13,24 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Employee extends User{
+public class Employee extends User {
 
     @NotBlank
     @Column(unique = true)
     private String phone;
 
     @NotNull
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    public Employee(Long id, String email, String name, String password, String phone, LocalDate birthDate) {
-        super(id, email, name, password);
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
+
+    public Employee(Long id, String name, String password, String email, String phone, LocalDate birthDate, Role role) {
+        super(id, name, password, email);
         this.phone = phone;
         this.birthDate = birthDate;
+        this.role = role;
     }
 }

@@ -1,8 +1,9 @@
 package com.epam.rd.autocode.spring.project.service;
 
 import com.epam.rd.autocode.spring.project.dto.OrderDTO;
+import org.springframework.data.domain.Page;
 
-import java.util.*;
+import java.util.List;
 
 public interface OrderService {
 
@@ -10,5 +11,11 @@ public interface OrderService {
 
     List<OrderDTO> getOrdersByEmployee(String employeeEmail);
 
-    OrderDTO addOrder(OrderDTO order);
+    OrderDTO addOrder(String clientEmail, String bookName);
+
+    List<OrderDTO> getAllOrders();
+
+    OrderDTO getOrderById(Long id);
+
+    Page<OrderDTO> getAllOrders(int page, int size);
 }

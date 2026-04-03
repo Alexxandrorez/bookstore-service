@@ -22,4 +22,13 @@ public class GlobalExceptionHandler {
         model.addAttribute("errorMessage",ex.getMessage());
         return "error";
     }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleInsufficientFundsException(InsufficientFundsException ex, Model model){
+        model.addAttribute("errorMessage",ex.getMessage());
+        return "error";
+    }
 }
+
+

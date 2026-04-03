@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{orders.title} + ' — ' + #{nav.brand}">Мої замовлення — Book Store</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a class="brand" href="/" th:text="#{nav.brand}">BOOKSTORE</a>
+    <div class="nav-right">
+        <div class="lang-switcher">
+            <a th:href="@{''(lang='uk')}" th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+            <span class="divider-small">|</span>
+            <a th:href="@{''(lang='en')}" th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+        </div>
+
+        <span sec:authorize="isAuthenticated()" class="nav-user">
+            <strong th:text="${#authentication.name}">User</strong>
+        </span>
+
+        <a th:href="@{/books/all}" class="btn-nav" th:text="#{nav.catalog}">Каталог</a>
+
+        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline-form">
+            <button type="submit" class="btn-nav btn-nav-danger" th:text="#{nav.logout}">Вийти</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container container-narrow">
+    <h2 class="page-title" th:text="#{orders.title}">Історія замовлень</h2>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-orders">
+        <p th:text="#{orders.empty}">Схоже, ви ще нічого не замовляли.</p>
+        <a th:href="@{/books/all}" class="btn-primary" th:text="#{nav.catalog}">До каталогу</a>
+    </div>
+
+    <div th:each="order : ${orders}" class="order-card">
+        <div class="order-header">
+            <span class="order-id" th:text="'#' + ${order.id}">#1</span>
+            <span class="order-date" th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy HH:mm')}">Дата</span>
+        </div>
+
+        <div class="order-content">
+            <div class="order-items-list">
+                <div th:each="item : ${order.bookItems}" class="book-item">
+                    <span class="book-title" th:text="${item.bookName}">Назва книги</span>
+                    <span class="book-qty" th:text="'× ' + ${item.quantity}">× 1</span>
+                </div>
+            </div>
+            <div class="order-sum">
+                <span class="order-sum-label" th:text="#{orders.sum.label}">Сума замовлення</span>
+                <span class="order-sum-value" th:text="${order.price} + ' ' + #{book.price.currency}">0.00 грн</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

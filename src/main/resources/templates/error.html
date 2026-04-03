@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{error.title} + ' — ' + #{nav.brand}">Помилка — Book Store</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a class="brand" href="/" th:text="#{nav.brand}">BOOKSTORE</a>
+    <div class="nav-right">
+        <div class="lang-switcher">
+            <a th:href="@{''(lang='uk')}" th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+            <span class="divider-small">|</span>
+            <a th:href="@{''(lang='en')}" th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+        </div>
+
+        <a th:href="@{/}" class="btn-nav" th:text="#{nav.back.home}">На головну</a>
+
+        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline-form">
+            <button type="submit" class="btn-nav btn-nav-danger" th:text="#{nav.logout}">Вийти</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container container-error">
+    <div class="card error-hero-card">
+        <h1 class="error-hero-title" th:text="#{error.header}">Щось пішло не так</h1>
+
+        <p th:if="${errorMessage != null}" th:text="${errorMessage}" class="error-hero-text">Повідомлення</p>
+
+        <p th:unless="${errorMessage != null}" class="error-hero-text-muted" th:text="#{error.message.default}">
+            Спробуйте пізніше або поверніться на головну.
+        </p>
+
+        <div class="actions" style="justify-content: center; margin-top: 2rem;">
+            <a th:href="@{/}" class="btn-primary" th:text="#{nav.back.home}">На головну</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

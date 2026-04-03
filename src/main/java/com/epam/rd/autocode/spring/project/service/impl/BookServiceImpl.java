@@ -6,6 +6,10 @@ import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.repo.BookRepository;
 import com.epam.rd.autocode.spring.project.service.BookService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +26,23 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Page<BookDTO> getAllBooks(int page, int size) {
+        return getAllBooks(page, size, "name", "asc");
+    }
+
+    @Override
+    public Page<BookDTO> getAllBooks(int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() :
+                Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+
+        return bookPage.map(book -> modelMapper.map(book, BookDTO.class));
+    }
+
+    @Override
     public List<BookDTO> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(book -> modelMapper.map(book, BookDTO.class))
@@ -30,18 +51,19 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDTO updateBookByName(String name, BookDTO book) {
-        Book bookEnt=bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("Not found"));
-        modelMapper.map(book, bookEnt);
+        Book bookEnt = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Book not found: " + name));
 
+        modelMapper.map(book, bookEnt);
         Book savedBook = bookRepository.save(bookEnt);
+
         return modelMapper.map(savedBook, BookDTO.class);
     }
 
     @Override
     public void deleteBookByName(String name) {
-        Book book=bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("Not found"));
+        Book book = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Book not found: " + name));
         bookRepository.delete(book);
     }
 
@@ -56,6 +78,6 @@ public class BookServiceImpl implements BookService {
     public BookDTO getBookByName(String name) {
         return bookRepository.findByName(name)
                 .map(book -> modelMapper.map(book, BookDTO.class))
-                .orElseThrow(()->new NotFoundException("Not found"));
+                .orElseThrow(() -> new NotFoundException("Book not found: " + name));
     }
 }

@@ -5,8 +5,8 @@ import com.epam.rd.autocode.spring.project.model.enums.Language;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,16 +24,21 @@ public class Book {
     private Long id;
 
     @NotBlank
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String genre;
 
+    @Column(name = "age_group")
     @Enumerated(EnumType.STRING)
     private AgeGroup ageGroup;
 
+    @NotNull
     @DecimalMin("0.0")
+    @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(name = "publication_date")
     private LocalDate publicationDate;
 
     @NotBlank
@@ -43,6 +48,7 @@ public class Book {
 
     private String characteristics;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)

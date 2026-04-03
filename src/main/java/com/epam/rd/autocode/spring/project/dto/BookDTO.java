@@ -4,6 +4,7 @@ import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDTO {
-    
+
     @NotBlank
     private String name;
 
@@ -25,6 +26,7 @@ public class BookDTO {
 
     private AgeGroup ageGroup;
 
+    @NotNull
     @DecimalMin("0.0")
     private BigDecimal price;
 

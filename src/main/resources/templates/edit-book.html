@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{book.edit.title} + ' — ' + #{nav.brand}">Редагування книги — BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a class="brand" href="/" th:text="#{nav.brand}">BOOKSTORE</a>
+    <div class="lang-switcher">
+        <a th:href="@{''(lang='uk')}" th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+        <span class="divider-small">|</span>
+        <a th:href="@{''(lang='en')}" th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+    </div>
+</nav>
+
+<div class="container container-narrow"> <div class="card">
+    <h1 class="page-title" style="text-align: left;" th:text="#{book.edit.title}">Редагувати книгу</h1>
+    <p class="meta" style="margin-bottom: 2rem;" th:text="#{book.edit.subtitle}">Змініть дані та натисніть "Зберегти зміни"</p>
+
+    <form th:action="@{/books/update}" th:object="${book}" method="post">
+
+        <input type="hidden" name="oldName" th:value="${oldName}">
+
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+            <ul class="self-note" style="text-align: left; padding-left: 1rem;">
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}">Помилка</span>
+        </div>
+
+        <div class="form-group">
+            <label th:text="#{book.field.name}">Назва книги</label>
+            <input type="text" th:field="*{name}" required>
+        </div>
+
+        <div class="form-group">
+            <label th:text="#{book.author}">Автор</label>
+            <input type="text" th:field="*{author}" required>
+        </div>
+
+        <div class="form-group">
+            <label th:text="#{book.field.price}">Ціна</label>
+            <input type="number" th:field="*{price}" step="0.01" required>
+        </div>
+
+        <div class="actions" style="flex-direction: column;">
+            <button type="submit" class="btn-primary" style="width: 100%;" th:text="#{book.edit.btn.save}">Зберегти зміни</button>
+
+            <a th:href="@{/employee/dashboard}"
+               class="btn-secondary"
+               style="margin-top: 1rem; width: 100%; text-align: center;"
+               th:text="#{btn.cancel}">
+                Скасувати
+            </a>
+        </div>
+    </form>
+</div>
+</div>
+
+</body>
+</html>

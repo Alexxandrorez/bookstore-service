@@ -4,64 +4,103 @@ import com.epam.rd.autocode.spring.project.dto.ClientDTO;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.model.Client;
+import com.epam.rd.autocode.spring.project.model.enums.Role;
 import com.epam.rd.autocode.spring.project.repo.ClientRepository;
+import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public ClientServiceImpl(ClientRepository clientRepository, ModelMapper modelMapper) {
+    public ClientServiceImpl(ClientRepository clientRepository,
+                             EmployeeRepository employeeRepository,
+                             ModelMapper modelMapper,
+                             BCryptPasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
+        this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public List<ClientDTO> getAllClients() {
         return clientRepository.findAll().stream()
-                .map(client -> modelMapper.map(client,ClientDTO.class))
+                .map(client -> modelMapper.map(client, ClientDTO.class))
                 .toList();
     }
 
     @Override
-    public ClientDTO getClientByEmail(String email) {
+    public Page<ClientDTO> getAllClients(int page, int size) {
+        return clientRepository.findAll(PageRequest.of(page, size))
+                .map(client -> modelMapper.map(client, ClientDTO.class));
+    }
 
-        Client clientEnt= clientRepository.findByEmail(email)
-                .orElseThrow(()->new NotFoundException("Not found"));
+    @Override
+    public ClientDTO getClientByEmail(String email) {
+        Client clientEnt = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Client not found with email: " + email));
         return modelMapper.map(clientEnt, ClientDTO.class);
     }
 
     @Override
-    public ClientDTO updateClientByEmail(String email, ClientDTO client) {
-        Client clientEnt= clientRepository.findByEmail(email)
-                .orElseThrow(()->new NotFoundException("Not found"));
-        modelMapper.map(client,clientEnt);
+    @Transactional
+    public ClientDTO updateClientByEmail(String email, ClientDTO clientDto) {
+        Client clientEnt = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Client not found with email: " + email));
 
-        Client clientSaved= clientRepository.save(clientEnt);
-        return modelMapper.map(clientSaved,ClientDTO.class);
+        modelMapper.map(clientDto, clientEnt);
+
+        if (clientDto.getPassword() != null && !clientDto.getPassword().isBlank()) {
+            clientEnt.setPassword(passwordEncoder.encode(clientDto.getPassword()));
+        }
+
+        Client clientSaved = clientRepository.save(clientEnt);
+        return modelMapper.map(clientSaved, ClientDTO.class);
     }
 
     @Override
+    @Transactional
     public void deleteClientByEmail(String email) {
-        Client clientEnt= clientRepository.findByEmail(email)
-                .orElseThrow(()->new NotFoundException("Not found"));
-
+        Client clientEnt = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Client not found with email: " + email));
         clientRepository.delete(clientEnt);
     }
 
     @Override
-    public ClientDTO addClient(ClientDTO client) {
-        if (clientRepository.findByEmail(client.getEmail()).isPresent()) {
-            throw new AlreadyExistException("Client with this email already exists");
+    @Transactional
+    public ClientDTO addClient(ClientDTO clientDto) {
+        if (clientRepository.findByEmail(clientDto.getEmail()).isPresent() ||
+                employeeRepository.findByEmail(clientDto.getEmail()).isPresent()) {
+            throw new AlreadyExistException("User with this email already exists");
         }
-        Client clientEnt= modelMapper.map(client, Client.class);
-        clientRepository.save(clientEnt);
-        return modelMapper.map(clientEnt, ClientDTO.class);
+
+        Client clientEnt = modelMapper.map(clientDto, Client.class);
+
+        if (clientDto.getPassword() != null && !clientDto.getPassword().isBlank()) {
+            clientEnt.setPassword(passwordEncoder.encode(clientDto.getPassword()));
+        }
+
+        if (clientEnt.getBalance() == null) {
+            clientEnt.setBalance(BigDecimal.valueOf(1000.00));
+        }
+
+        clientEnt.setRole(Role.CUSTOMER);
+
+        Client savedClient = clientRepository.save(clientEnt);
+        return modelMapper.map(savedClient, ClientDTO.class);
     }
 }

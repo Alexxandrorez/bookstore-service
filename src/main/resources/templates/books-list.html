@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{catalog.title} + ' — ' + #{nav.brand}">Каталог книг — BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a class="brand" href="/" th:text="#{nav.brand}">BOOKSTORE</a>
+    <div class="lang-switcher">
+        <a th:href="@{''(lang='uk', page=${currentPage}, sortBy=${sortBy}, direction=${direction})}"
+           th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+        <span class="divider-small">|</span>
+        <a th:href="@{''(lang='en', page=${currentPage}, sortBy=${sortBy}, direction=${direction})}"
+           th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+    </div>
+</nav>
+
+<div class="container">
+    <p class="meta" th:text="#{catalog.subtitle}">Каталог</p>
+    <h2 class="page-title" style="text-align: left;" th:text="#{catalog.title}">Наші книги</h2>
+
+    <div class="toolbar-row" style="border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+        <div class="sort-wrapper">
+            <span class="detail-label" style="display: inline; margin-right: 10px;" th:text="#{catalog.sort.label}">Сортувати:</span>
+            <select class="sort-select" onchange="location = this.value;">
+                <option th:value="@{/books/all(sortBy='name', direction='asc', lang=${#locale.language})}" th:selected="${sortBy == 'name' && direction == 'asc'}" th:text="#{catalog.sort.name.asc}">Назвою (А-Я)</option>
+                <option th:value="@{/books/all(sortBy='name', direction='desc', lang=${#locale.language})}" th:selected="${sortBy == 'name' && direction == 'desc'}" th:text="#{catalog.sort.name.desc}">Назвою (Я-А)</option>
+                <option th:value="@{/books/all(sortBy='price', direction='asc', lang=${#locale.language})}" th:selected="${sortBy == 'price' && direction == 'asc'}" th:text="#{catalog.sort.price.asc}">Ціною (спочатку дешевші)</option>
+                <option th:value="@{/books/all(sortBy='price', direction='desc', lang=${#locale.language})}" th:selected="${sortBy == 'price' && direction == 'desc'}" th:text="#{catalog.sort.price.desc}">Ціною (спочатку дорожчі)</option>
+            </select>
+        </div>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success">
+        <span th:text="${message}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="grid">
+        <div class="book-card" th:each="book : ${books}">
+            <div class="book-info">
+                <p class="meta" th:text="#{book.author}">Автор</p>
+                <h3 class="book-title-link" th:text="${book.name}">Назва книги</h3>
+            </div>
+
+            <div class="book-footer">
+                <p class="price">
+                    <strong th:text="${book.price} + ' ' + #{book.price.currency}">0 грн</strong>
+                </p>
+
+                <div class="actions">
+                    <a th:href="@{/books/details/{name}(name=${book.name})}" class="btn-outline btn-tiny" th:text="#{book.details}">Детальніше</a>
+
+                    <form sec:authorize="hasRole('EMPLOYEE')" th:action="@{/books/delete}" method="post" class="inline-form"
+                          th:onsubmit="|return confirm('#{clients.confirm.delete}');|">
+                        <input type="hidden" name="name" th:value="${book.name}">
+                        <button type="submit" class="btn-outline btn-danger btn-tiny" th:text="#{clients.action.delete}">Видалити</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${totalPages > 1}" class="pagination-row" style="margin-top: 4rem; display: flex; justify-content: center; align-items: center; gap: 1.5rem;">
+        <a th:if="${currentPage > 0}" th:href="@{/books/all(page=${currentPage - 1}, sortBy=${sortBy}, direction=${direction}, lang=${#locale.language})}"
+           class="btn-outline btn-tiny" th:text="#{paging.back}">← Назад</a>
+
+        <div class="self-note">
+            <span th:text="#{paging.page}">Сторінка</span>
+            <strong th:text="${currentPage + 1}">1</strong>
+            <span th:text="#{paging.of}">з</span>
+            <strong th:text="${totalPages}">10</strong>
+        </div>
+
+        <a th:if="${currentPage < totalPages - 1}" th:href="@{/books/all(page=${currentPage + 1}, sortBy=${sortBy}, direction=${direction}, lang=${#locale.language})}"
+           class="btn-outline btn-tiny" th:text="#{paging.forward}">Вперед →</a>
+    </div>
+
+    <a href="/" class="btn-secondary" style="margin-top: 3.5rem; display: inline-block;" th:text="#{nav.back.home}">
+        ← Назад на головну
+    </a>
+</div>
+
+<script th:src="@{/js/scroll-restoration.js}"></script> </body>
+</html>

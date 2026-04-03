@@ -1,8 +1,6 @@
 package com.epam.rd.autocode.spring.project.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 
@@ -13,18 +11,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientDTO{
-
-    @Email
+    @NotBlank(message = "{validation.clientDTO.email.notblank}")
+    @Email(message = "{validation.clientDTO.email.invalid}")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "{validation.clientDTO.password.notblank}")
+    @Size(min = 8, max = 64, message = "{validation.clientDTO.password.size}")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "{validation.clientDTO.name.notblank}")
     private String name;
 
-    @DecimalMin("0.0")
+    @DecimalMin(value = "0.0", message = "{validation.clientDTO.balance.min}")
     private BigDecimal balance;
-
 
 }

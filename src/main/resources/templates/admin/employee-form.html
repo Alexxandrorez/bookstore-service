@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="#{auth.register.title} + ' — ' + #{nav.brand}">Новий працівник — BookStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav>
+    <a class="brand" href="/">
+        <span th:text="#{nav.brand}">BOOKSTORE</span>
+        <small th:text="#{nav.admin}">ADMIN</small>
+    </a>
+    <div class="nav-right">
+        <div class="lang-switcher">
+            <a th:href="@{''(lang='uk')}" th:class="${#locale.language == 'uk' ? 'active' : ''}">UA</a>
+            <span class="divider-small">|</span>
+            <a th:href="@{''(lang='en')}" th:class="${#locale.language == 'en' ? 'active' : ''}">EN</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container container-narrow">
+    <div class="card">
+        <h1 class="page-title" style="text-align: left;" th:text="#{auth.register.title}">Новий співробітник</h1>
+
+        <form th:action="@{/admin/employees/add}" th:object="${employee}" method="post" novalidate>
+
+            <div th:if="${errorMessage != null}" class="alert alert-danger">
+                <span th:text="${errorMessage}">Помилка</span>
+            </div>
+
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                <ul class="self-note" style="text-align: left; padding-left: 1rem;">
+                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{auth.field.name}">Повне ім'я</label>
+                <input type="text" th:field="*{name}" required>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{auth.field.email}">Email адреса</label>
+                <input type="email" th:field="*{email}" placeholder="example@mail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{auth.field.password}">Пароль</label>
+                <input type="password" th:field="*{password}" minlength="8" maxlength="64" required>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{auth.field.phone}">Телефон</label>
+                <input type="text" th:field="*{phone}" placeholder="0509006007" required>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{auth.field.birthdate}">Дата народження</label>
+                <input type="date" th:field="*{birthDate}" required>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{auth.field.role}">Роль у системі</label>
+                <select th:field="*{role}" class="sort-select" style="width: 100%; border: 1px solid #c2bdb6; padding: 0.8rem; background: #fff;">
+                    <option th:value="EMPLOYEE" th:text="'EMPLOYEE (' + #{admin.employees.card.title} + ')'">EMPLOYEE</option>
+                    <option th:value="ADMIN" th:text="'ADMIN (' + #{nav.admin} + ')'">ADMIN</option>
+                </select>
+            </div>
+
+            <div class="actions" style="flex-direction: column; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn-primary" style="width: 100%;" th:text="#{auth.btn.register}">Зареєструвати</button>
+                <a th:href="@{/admin/employees}" class="btn-secondary" style="width: 100%; text-align: center;" th:text="#{profile.back}">
+                    Скасувати та повернутись
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

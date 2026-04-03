@@ -1,48 +1,48 @@
 package com.epam.rd.autocode.spring.project.controller;
 
-import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
-import com.epam.rd.autocode.spring.project.service.EmployeeService;
+import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.dto.OrderDTO;
+import com.epam.rd.autocode.spring.project.service.BookService;
+import com.epam.rd.autocode.spring.project.service.OrderService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/employees")
+@RequestMapping("/employee")
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
+    private final OrderService orderService;
+    private final BookService bookService;
 
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
+    public EmployeeController(OrderService orderService, BookService bookService) {
+        this.orderService = orderService;
+        this.bookService = bookService;
     }
 
-    @GetMapping("/all")
-    public String getAllEmployees(Model model) {
-        model.addAttribute("employees", employeeService.getAllEmployees());
-        return "employees-list";
+    @GetMapping("/dashboard")
+    public String employeeDashboard(
+            @RequestParam(defaultValue = "0") int ordersPage,
+            @RequestParam(defaultValue = "0") int booksPage,
+            Model model) {
+
+        int pageSize = 8;
+
+        Page<OrderDTO> orders = orderService.getAllOrders(ordersPage, pageSize);
+        Page<BookDTO> books = bookService.getAllBooks(booksPage, pageSize, "name", "asc");
+
+        model.addAttribute("ordersPage", orders);
+        model.addAttribute("booksPage", books);
+        model.addAttribute("totalOrdersCount", orders.getTotalElements());
+        model.addAttribute("totalBooksCount", books.getTotalElements());
+
+        return "employee-dashboard";
     }
 
-    @GetMapping("/{email}")
-    public String getEmployeeByEmail(@PathVariable String email, Model model) {
-        model.addAttribute("employee", employeeService.getEmployeeByEmail(email));
-        return "employee-profile";
-    }
-
-    @PostMapping("/add")
-    public String addEmployee(EmployeeDTO employeeDTO) {
-        employeeService.addEmployee(employeeDTO);
-        return "redirect:/employees/all";
-    }
-
-    @PostMapping("/update")
-    public String updateEmployee(@RequestParam String email, EmployeeDTO employeeDTO) {
-        employeeService.updateEmployeeByEmail(email, employeeDTO);
-        return "redirect:/employees/" + email;
-    }
-
-    @PostMapping("/delete")
-    public String deleteEmployee(@RequestParam String email) {
-        employeeService.deleteEmployeeByEmail(email);
-        return "redirect:/employees/all";
+    @GetMapping("/orders/{id}")
+    public String orderDetails(@PathVariable Long id, Model model) {
+        model.addAttribute("order", orderService.getOrderById(id));
+        return "employee-order-details";
     }
 }
